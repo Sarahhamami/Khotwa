@@ -2,14 +2,16 @@ package tn.esprit.khotwaback.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Date;
 @Entity
-@ToString
-@Setter
 @Getter
+@Setter
+@ToString
+@NoArgsConstructor
 public class Paiement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
