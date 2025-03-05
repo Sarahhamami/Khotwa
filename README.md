@@ -39,7 +39,7 @@ E-Learning-Platform/
 ## Getting Started
 1. **Cloner le projet :**
    ```sh
-   git clone https://github.com/your-username/e-learning-platform.git
+   git clone https://github.com/Sarahhamami/Khotwa.git
    ```
 2. **Configurer Keycloak** et démarrer les services Docker.
 3. **Lancer le backend :**
@@ -48,11 +48,12 @@ E-Learning-Platform/
    mvn spring-boot:run
    ```
 4. **Lancer le frontend :**
+   acceder à https://github.com/Yassinekh17/khotwaFront et cloner le projet front-end
    ```sh
-   cd frontend
-   ng serve
+   git clone https://github.com/Yassinekh17/khotwaFront
+   ng serve 
    ```
-5. **Accéder à la plateforme :** `http://localhost:4200`
+6. **Accéder à la plateforme :** `http://localhost:4200`
 
 ## Acknowledgments
-Ce projet a été développé sous la supervision de l'**Esprit School of Engineering** et dans le cadre du programme GitHub Education.
+Ce projet a été développé sous la supervision de l'**Esprit School of Engineering** et dans le cadre du programme de PIDev 2eme année ingénieurie 4SAE.
