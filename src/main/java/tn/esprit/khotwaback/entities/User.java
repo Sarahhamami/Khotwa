@@ -19,26 +19,14 @@ public class User {
     private String email ;
     private String mdp ;
     private ROLE role;
-    @ManyToMany
-    private List<Evenement> evenements;
-    @ManyToMany
-    private List<Cours> cours;
-    @OneToMany(mappedBy = "user")
-    private  List<Certificat_evenement> certificatEvenements ;
-    @OneToMany(mappedBy = "user")
-    private  List<Commentaire_evenement> commentaireEvenements ;
-    @OneToMany(mappedBy = "user")
-    private  List<Commentaire_cours> commentaireCours ;
-    @OneToMany(mappedBy = "user")
-    private  List<Certificat_cours> certificatCours ;
-    @OneToMany(mappedBy = "user")
-    private List<Abonnement> abonnements;
-    @OneToMany(mappedBy = "user")
-    private List<Paiement> paiements;
-    @ManyToMany
-    private List<Promotion> promotions;
     @OneToMany(mappedBy = "expediteur")
     private List<Message> messagesEnvoyes;
+
     @ManyToMany
+    @JoinTable(
+            name = "user_message",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "message_id")
+    )
     private List<Message> messagesRecus;
 }

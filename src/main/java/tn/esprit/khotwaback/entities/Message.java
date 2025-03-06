@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 @Entity
@@ -26,5 +27,10 @@ public class Message {
     private User expediteur;
     @ManyToMany(mappedBy = "messagesRecus")
     private List<User> destinataires;
+
+    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties({"message"}) // Évite les boucles infinies
+    private List<Commentair> commentaires = new ArrayList<>();
+
 
 }
