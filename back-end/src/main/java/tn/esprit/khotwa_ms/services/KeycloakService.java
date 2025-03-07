@@ -96,35 +96,46 @@ public class KeycloakService {
         }
         return null;
     }
-  /*  public Response updateUserInKeycloak(String email, Users user) {
+    public String updateUserInKeycloak(String email, String nom, String prenom, String password, String role) {
         try {
-            // Get user by email
-            List<UserRepresentation> users = usersResource.search(email);
-
+            // Fetch user from Keycloak by email (or user ID)
+            List<UserRepresentation> users = keycloak.realm("Khotwa").users().search(email);
             if (users.isEmpty()) {
-                return Response.status(Response.Status.NOT_FOUND).entity("User not found in Keycloak.").build();
+                return "User not found in Keycloak";
             }
 
-            UserRepresentation keycloakUser = users.get(0); // Get the first matching user
+            // Get the user ID (assuming the first user in the list is the correct one)
+            String userId = users.get(0).getId();
 
-            // Update the user details
-            keycloakUser.setFirstName(user.getNom());
-            keycloakUser.setLastName(user.getPrenom());
-            keycloakUser.setEmail(user.getEmail());
-
-            // Send the update request
-            Response response = usersResource.get(keycloakUser.getId()).update(keycloakUser);
-
-            if (response.getStatus() == 204) {
-                return Response.status(Response.Status.OK).entity("User updated successfully!").build();
-            } else {
-                return Response.status(response.getStatus()).entity("Error updating user in Keycloak: " + response.getStatus()).build();
+            // Update user details
+            UserRepresentation user = keycloak.realm("Khotwa").users().get(userId).toRepresentation();
+            user.setUsername(email);
+            user.setFirstName(nom);
+            user.setLastName(prenom);
+            if (password != null && !password.isEmpty()) {
+                // Update password (if it's provided)
+                CredentialRepresentation credential = new CredentialRepresentation();
+                credential.setType(CredentialRepresentation.PASSWORD);
+                credential.setValue(password);
+                user.setCredentials(Collections.singletonList(credential));
             }
+
+            // Update user roles
+            String clientId = "khotwa-rest-api";  // The client ID in Keycloak
+            Map<String, List<String>> clientRoles = new HashMap<>();
+            clientRoles.put(clientId, Collections.singletonList(role));
+            user.setClientRoles(clientRoles);
+
+            // Update the user in Keycloak
+            keycloak.realm("Khotwa").users().get(userId).update(user);
+
+            return "User updated successfully!";
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error updating user in Keycloak: " + e.getMessage()).build();
+            return "Error while updating user in Keycloak";
         }
-    }*/
+    }
+
 
 
 }  

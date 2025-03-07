@@ -24,6 +24,7 @@ public class KeycloakSecurityConfig implements WebMvcConfigurer {
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for APIs
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Enforce stateless authentication
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers("/auth/register").permitAll()
                         .requestMatchers("/registerUser").permitAll() // Allow public access to register
                         .requestMatchers("/api/auth/**").permitAll() // Keep other auth endpoints open

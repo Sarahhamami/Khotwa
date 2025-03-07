@@ -4,6 +4,9 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.representations.account.UserRepresentation;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.khotwa_ms.entity.Users;
@@ -53,27 +56,6 @@ public class ServiceUser implements IServiceUser{
         return userRepository.save(user);
     }
 
-    @Override
-    public Users updateUser(Integer id, Users newUser) {
-        Optional<Users> existingUserOpt = userRepository.findById(id);
-        if (existingUserOpt.isPresent()) {
-            Users existingUser = existingUserOpt.get();
-            existingUser.setNom(newUser.getNom());
-            existingUser.setEmail(newUser.getEmail());
-            existingUser.setPrenom(newUser.getPrenom());
-            existingUser.setRole(newUser.getRole());
-            existingUser.setMdp(newUser.getMdp());
-
-            // Only update the image if a new one is provided
-            if (newUser.getImage() != null) {
-                existingUser.setImage(newUser.getImage());
-            }
-
-            return userRepository.save(existingUser);
-        } else {
-            throw new EntityNotFoundException("User with ID " + id + " not found");
-        }
-    }
 
 
 

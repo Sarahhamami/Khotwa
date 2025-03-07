@@ -61,38 +61,53 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-   /* @PostMapping("/updateUser")
-    public ResponseEntity<String> updateUser(@RequestParam String email, @RequestParam String nom, @RequestParam String prenom) {
+    @CrossOrigin(origins = "http://localhost:4200")
+    @PutMapping(value = "/updateUser", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Users> updateUser(@RequestParam Integer userId,
+                                            @RequestParam String nom,
+                                            @RequestParam String prenom,
+                                            @RequestParam String email,
+                                            @RequestParam String mdp,
+                                            @RequestParam String role,
+                                            @RequestParam(value = "image", required = false) MultipartFile image) {
         try {
-            // Fetch the user from your local database
-            Optional<Users> existingUser = userRepository.findByEmail(email);
-            if (existingUser.isPresent()) {
-                Users user = existingUser.get();
-                user.setNom(nom);
-                user.setPrenom(prenom);
+            // 1. Retrieve the user from the database
+            Users user = serviceUser.getUserById(userId); // You need to create this method to fetch the user by ID
 
-                // Save the user in your local database
-                userRepository.save(user);
-
-                // Update the user in Keycloak
-                Response keycloakResponse = keycloakService.updateUserInKeycloak(email, user);
-
-                if (keycloakResponse.getStatus() == Response.Status.OK.getStatusCode()) {
-                    return ResponseEntity.ok("User updated successfully!");
-                } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating user in Keycloak: " + keycloakResponse.getEntity());
-                }
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // User not found
             }
+
+            // 2. Update the user details in the local database
+            user.setNom(nom);
+            user.setPrenom(prenom);
+            user.setEmail(email);
+            user.setMdp(passwordEncoder.encode(mdp)); // Hash the password
+            user.setRole(ROLE.valueOf(role.toUpperCase())); // Update the role
+
+            // If an image is provided, upload it and update the image URL
+            if (image != null && !image.isEmpty()) {
+                String imageUrl = uploadImageToCloud(image); // Assuming you have this method to handle image upload
+                user.setImage(imageUrl);
+            }
+
+            // 3. Update user in the local database
+            Users updatedUser = serviceUser.addUser(user); // This saves the updated user in the database
+
+            // 4. Update user details in Keycloak
+            String keycloakResponse = keycloakService.updateUserInKeycloak(email, nom, prenom, mdp, role);
+            if (!keycloakResponse.equals("User updated successfully!")) {
+                throw new RuntimeException("Error while updating user in Keycloak");
+            }
+
+            // 5. Return the updated user response
+            return ResponseEntity.ok(updatedUser);
+
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-*/
-
-
 
 
 

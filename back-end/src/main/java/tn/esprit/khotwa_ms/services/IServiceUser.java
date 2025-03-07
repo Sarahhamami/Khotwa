@@ -8,7 +8,6 @@ import java.util.List;
 
 public interface IServiceUser {
     public Users addUser(Users user);
-    public Users updateUser(Integer id, Users user) throws IOException;
     public List<Users> getAllUsers();
     public Users getUserById(Integer id);
     public void deleteById(Integer id);
