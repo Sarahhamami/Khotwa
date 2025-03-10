@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import tn.esprit.khotwa_ms.entity.UserAction;
 import tn.esprit.khotwa_ms.entity.UserActivity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface UserActivityRepository extends JpaRepository<UserActivity,Long> {
@@ -25,4 +26,11 @@ public interface UserActivityRepository extends JpaRepository<UserActivity,Long>
 
     @Query("SELECT COUNT(ua) FROM UserActivity ua WHERE ua.user.id_user = :id_user")
     Integer countByUser(@Param("id_user") Integer id_user);
+
+    @Query("SELECT COUNT(a) FROM UserActivity a")
+    long countTotalActions();
+
+    @Query("SELECT COUNT(a) FROM UserActivity a WHERE a.action_date BETWEEN ?1 AND ?2")
+    long countActionsBetweenDates(LocalDateTime startDate, LocalDateTime endDate);
 }
+
