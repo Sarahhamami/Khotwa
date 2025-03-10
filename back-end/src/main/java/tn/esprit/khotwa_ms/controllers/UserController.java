@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import tn.esprit.khotwa_ms.configuration.KeycloakAdminClientConfig;
 import tn.esprit.khotwa_ms.entity.ROLE;
 import tn.esprit.khotwa_ms.entity.Users;
 import tn.esprit.khotwa_ms.repositories.UserRepository;
@@ -35,6 +36,7 @@ public class UserController {
 
     private final KeycloakService keycloakService;
     private final PasswordEncoder passwordEncoder;
+    public final KeycloakAdminClientConfig keycloakAdminClientConfig;
     @PostMapping(value = "/addUser", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Users> addUser(@RequestParam("user") String userJson,
                                          @RequestParam(value = "image", required = false) MultipartFile image) {
@@ -199,6 +201,41 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    @PostMapping("/sendEmail")
+    public ResponseEntity<String> sendEmail() {
+        try {
+            // Call the service method to send an email
+            boolean success = serviceUser.sendEmail("asunaa030@gmail.com", "aa", "body");
 
+            // Check if email sending was successful
+            if (success) {
+                return ResponseEntity.ok("A new password has been sent to your email.");
+            } else {
+                return ResponseEntity.badRequest().body("Email not found.");
+            }
+        } catch (Exception e) {
+            // Handle potential exceptions (e.g., email sending failure)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send email: " + e.getMessage());
+        }
+    }
+    @PutMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestParam String email) {
+        boolean success = serviceUser.resetPassword(email);
+
+        if (success) {
+            return ResponseEntity.ok("A new password has been sent to your email.");
+        } else {
+            return ResponseEntity.badRequest().body("Email not found.");
+        }
+    }
+    @PutMapping("/update-password")
+    public ResponseEntity<String> updatePassword(@RequestParam String username, @RequestParam String newPassword) {
+        try {
+            keycloakService.updateUserPassword(username, newPassword);
+            return ResponseEntity.ok("Password updated successfully for user: " + username);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
 }
