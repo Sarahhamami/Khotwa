@@ -2,13 +2,13 @@ package tn.esprit.khotwaback.restControllers;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.khotwaback.entities.Abonnement;
 import tn.esprit.khotwaback.entities.PLAN_abonnement;
 import tn.esprit.khotwaback.services.AbonnementService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/abonnements")
@@ -17,6 +17,7 @@ public class AbonnementRestController {
 
     @Autowired
     private AbonnementService abonnementService;
+
 
     @PostMapping("/add")
     public Abonnement addAbonnement(@RequestBody Abonnement abonnement) {
@@ -46,4 +47,18 @@ public class AbonnementRestController {
     public List<Abonnement> getAbonnementsByPlan(@RequestParam PLAN_abonnement plan) {
         return abonnementService.getAbonnementsByPlan(plan);
     }
+    @GetMapping("/sorted")
+    public List<Abonnement> getAbonnementsSortedByPrice(
+            @RequestParam String sortDirection,
+            @RequestParam(required = false) PLAN_abonnement plan) {
+        return abonnementService.getAbonnementsSortedByPrice(sortDirection, plan);
+    }
+
+    @GetMapping("/statistics")
+    public Map<String, Object> getAbonnementStatistics() {
+        return abonnementService.getAbonnementStatistics();
+    }
+
+
+
 }
