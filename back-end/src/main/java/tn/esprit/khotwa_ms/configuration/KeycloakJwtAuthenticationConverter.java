@@ -11,8 +11,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class KeycloakJwtAuthenticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
-
+public class KeycloakJwtAuthenticationConverter{ //implements Converter<Jwt, AbstractAuthenticationToken>
+/*
     private final JwtAuthenticationConverter jwtAuthenticationConverter;
 
     public KeycloakJwtAuthenticationConverter() {
@@ -39,5 +39,5 @@ public class KeycloakJwtAuthenticationConverter implements Converter<Jwt, Abstra
             }
         }
         return Collections.emptyList();
-    }
+    }*/
 }

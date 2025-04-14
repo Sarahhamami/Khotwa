@@ -2,8 +2,10 @@ package tn.esprit.khotwa_ms.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,11 +24,14 @@ public class KeycloakSecurityConfig implements WebMvcConfigurer {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for APIs
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Enforce stateless authentication
+                .cors(cors -> cors.disable())
+                //.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Enforce stateless authentication
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/auth/register").permitAll()
-                        .requestMatchers("/registerUser").permitAll() // Allow public access to register
+                        .requestMatchers("/registerUser").permitAll()
+                        .requestMatchers("/update-password/**").permitAll()// Allow public access to register
                         .requestMatchers("/api/auth/**").permitAll() // Keep other auth endpoints open
                         .requestMatchers("/swagger-ui/**").permitAll() // Allow Swagger UI access
                         .requestMatchers("/v3/api-docs/**").permitAll() // Allow OpenAPI docs access
@@ -36,17 +41,16 @@ public class KeycloakSecurityConfig implements WebMvcConfigurer {
                         .requestMatchers("/api/etudiant/**").hasRole("ETUDIANT")
                         .anyRequest().authenticated() // Other routes require authentication
                 )
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(new KeycloakJwtAuthenticationConverter())))
-                .headers(headers -> headers
-                        .addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)) // Disable X-Frame-Options
-                );
+
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+
 
         return http.build();
     }
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        return JwtDecoders.fromIssuerLocation("http://localhost:8081/realms/Khotwa");
+            return JwtDecoders.fromIssuerLocation("http://localhost:8081/realms/Khotwa");
     }
 
     @Bean
@@ -54,12 +58,12 @@ public class KeycloakSecurityConfig implements WebMvcConfigurer {
         return new BCryptPasswordEncoder();
     }
 
-    @Override
+   /* @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")  // Allow all endpoints
                 .allowedOrigins("http://localhost:4200") // Allow requests from Angular
                 .allowedMethods("GET", "POST", "PUT", "DELETE") // Specify allowed HTTP methods
                 .allowedHeaders("*") // Allow any headers
                 .allowCredentials(true);
-    }
+    }*/
 }

@@ -2,6 +2,7 @@ package tn.esprit.khotwa_ms.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import tn.esprit.khotwa_ms.entity.ROLE;
 import tn.esprit.khotwa_ms.repositories.UserActivityRepository;
 import tn.esprit.khotwa_ms.repositories.UserRepository;
 
@@ -19,7 +20,12 @@ public class UserStatisticsService {
     }
 
     public long getTotalUsersByRole(String role) {
-        return usersRepository.countUsersByRole(role);
+        try {
+            ROLE roleEnum = ROLE.valueOf(role.toUpperCase()); // Convert string to enum
+            return usersRepository.countUsersByRole(roleEnum);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid role: " + role);
+        }
     }
 
     public long getTotalUserActions() {

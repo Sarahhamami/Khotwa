@@ -21,14 +21,11 @@ import tn.esprit.khotwa_ms.services.KeycloakService;
 import tn.esprit.khotwa_ms.services.ServiceUser;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
+//@CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
 
     private final ServiceUser serviceUser;
@@ -63,7 +60,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @CrossOrigin(origins = "http://localhost:4200")
+
     @PutMapping(value = "/updateUser", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Users> updateUser(@RequestParam Integer userId,
                                             @RequestParam String nom,
@@ -113,13 +110,13 @@ public class UserController {
 
 
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    //@CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/getAllUsers")
     public List<Users> getAllUsers() {
         return serviceUser.getAllUsers();
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    //@CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/getUserByEmail/{email}")
     public ResponseEntity<Users> getUserByEmail(@PathVariable String email) {
         System.out.println("Fetching user by email: " + email);
@@ -140,7 +137,7 @@ public class UserController {
     public Users getUserById(@PathVariable Integer id) {
         return serviceUser.getUserById(id);
     }
-    @CrossOrigin(origins = "http://localhost:4200")
+    //@CrossOrigin(origins = "http://localhost:4200")
     @DeleteMapping("/deleteByIdB/{id}")
     public void deleteById(@PathVariable Integer id) {
         serviceUser.deleteById(id);
@@ -158,7 +155,7 @@ public class UserController {
         Map<String, Object> uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
         return uploadResult.get("url").toString();
     }
-    @CrossOrigin(origins = "http://localhost:4200")
+    //@CrossOrigin(origins = "http://localhost:4200")
     //keycloack+database adding user
     @PostMapping(value = "/registerUser", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Users> registerUser(@RequestParam String nom,
@@ -229,13 +226,18 @@ public class UserController {
         }
     }
     @PutMapping("/update-password")
-    public ResponseEntity<String> updatePassword(@RequestParam String username, @RequestParam String newPassword) {
+    public ResponseEntity<Map<String, String>> updatePassword(@RequestParam String username, @RequestParam String newPassword) {
         try {
             keycloakService.updateUserPassword(username, newPassword);
-            return ResponseEntity.ok("Password updated successfully for user: " + username);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Password updated successfully for user: " + username);
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
         }
     }
+
 
 }

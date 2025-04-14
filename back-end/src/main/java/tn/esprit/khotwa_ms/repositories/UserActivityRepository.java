@@ -32,5 +32,21 @@ public interface UserActivityRepository extends JpaRepository<UserActivity,Long>
 
     @Query("SELECT COUNT(a) FROM UserActivity a WHERE a.action_date BETWEEN ?1 AND ?2")
     long countActionsBetweenDates(LocalDateTime startDate, LocalDateTime endDate);
+
+
+    //for analytics
+
+    @Query("SELECT ua.user, COUNT(ua) as actions FROM UserActivity ua GROUP BY ua.user ORDER BY actions DESC")
+    List<Object[]> findMostActiveUsers();
+    @Query("SELECT FUNCTION('DATE', ua.action_date) as date, COUNT(ua) FROM UserActivity ua WHERE ua.action = :action GROUP BY FUNCTION('DATE', ua.action_date) ORDER BY date")
+    List<Object[]> countLoginsPerDay(@Param("action") UserAction action);
+    @Query("SELECT ua.action, COUNT(ua) FROM UserActivity ua GROUP BY ua.action")
+    List<Object[]> countActionsByType();
+
+    @Query("SELECT FUNCTION('HOUR', ua.action_date), COUNT(ua) FROM UserActivity ua GROUP BY FUNCTION('HOUR', ua.action_date) ORDER BY FUNCTION('HOUR', ua.action_date)")
+    List<Object[]> countActionsByHour();
+    @Query("SELECT FUNCTION('MONTH', ua.action_date), COUNT(ua) FROM UserActivity ua GROUP BY FUNCTION('MONTH', ua.action_date) ORDER BY FUNCTION('MONTH', ua.action_date)")
+    List<Object[]> countMonthlyActivity();
+
 }
 

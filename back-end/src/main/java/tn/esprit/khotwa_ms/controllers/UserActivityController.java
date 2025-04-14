@@ -37,7 +37,7 @@ public class UserActivityController {
 
         return userActivityService.predictSatisfaction(email);
     }
-    @CrossOrigin(origins = "http://localhost:4200")
+    //@CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/addUserActivity/{email}")
     public void createUserActivity(@PathVariable String email, @RequestBody Map<String, String> request) {
         String actionStr = request.get("action");
